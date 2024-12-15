@@ -1,38 +1,30 @@
 import argparse
-from config_parser.parser import remove_comments, parse_lists, parse_constants, parse_expressions
-from config_parser.transformer import transform_to_yaml
+import yaml  # Библиотека для формирования YAML
+from config_parser.parser import preprocess_text, remove_comments  # Исправленный импорт
 
-def main():
-    parser = argparse.ArgumentParser(description="CLI для обработки конфигурационного языка.")
-    parser.add_argument("--input", required=True, help="Путь к входному файлу")
-    args = parser.parse_args()
+if __name__ == "__main__":
+    arg_parser = argparse.ArgumentParser()
+    arg_parser.add_argument("--input", help="Путь к файлу с конфигурацией")
+    args = arg_parser.parse_args()
 
-    try:
-        with open(args.input, "r", encoding="utf-8") as file:
-            input_text = file.read()
+    if args.input:
+        with open(args.input, "r", encoding="utf-8") as f:
+            input_text = f.read()
 
-        print(f"Текст после загрузки:\n{input_text}")
-        clean_text = remove_comments(input_text)
-        print(f"Текст после удаления комментариев:\n{clean_text}")
-        lists = parse_lists(clean_text)
-        print(f"Найденные списки: {lists}")
-        constants = parse_constants(clean_text)
-        print(f"Найденные константы: {constants}")
-        expressions = parse_expressions(clean_text, constants)
-        print(f"Результаты вычислений: {expressions}")
+        # Выполняем предварительную обработку
+        constants, lists_parsed, expressions = preprocess_text(input_text)
 
-        data = {
-            "lists": lists,
+        # Формируем итоговый результат
+        result = {
             "constants": constants,
+            "lists": [list(x) for x in set(tuple(l) for l in lists_parsed)],  # Убираем дубликаты списков
             "expressions": expressions
         }
 
-        yaml_output = transform_to_yaml(data)
-        print("Итоговый YAML:")
-        print(yaml_output)
-    except Exception as e:
-        print(f"Ошибка: {e}")
-
-
-if __name__ == "__main__":
-    main()
+        # Вывод результатов
+        print("Текст после загрузки:\n", input_text)
+        print("\nТекст после удаления комментариев:\n", remove_comments(input_text))
+        print("\nНайденные константы:", constants)
+        print("\nРезультаты вычислений:", expressions)
+        print("\nИтоговый YAML:")
+        print(yaml.dump(result, allow_unicode=True, sort_keys=False))
