@@ -8,13 +8,18 @@ def main():
     args = parser.parse_args()
 
     try:
-        with open(args.input, "r") as file:
+        with open(args.input, "r", encoding="utf-8") as file:
             input_text = file.read()
 
+        print(f"Текст после загрузки:\n{input_text}")
         clean_text = remove_comments(input_text)
+        print(f"Текст после удаления комментариев:\n{clean_text}")
         lists = parse_lists(clean_text)
+        print(f"Найденные списки: {lists}")
         constants = parse_constants(clean_text)
+        print(f"Найденные константы: {constants}")
         expressions = parse_expressions(clean_text, constants)
+        print(f"Результаты вычислений: {expressions}")
 
         data = {
             "lists": lists,
@@ -23,9 +28,11 @@ def main():
         }
 
         yaml_output = transform_to_yaml(data)
+        print("Итоговый YAML:")
         print(yaml_output)
     except Exception as e:
         print(f"Ошибка: {e}")
+
 
 if __name__ == "__main__":
     main()

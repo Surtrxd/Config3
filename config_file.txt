@@ -1,8 +1,18 @@
-#| Это многострочный
-комментарий |#
-(define x 10);
-(define y 20);
+#| Проверяем многострочные
+комментарии. Этот текст
+должен быть удалён. |#
+
+(define x 10);  
+(define y 20);  
+(define z 5);   
+
 list(1 2 3)
-list(a b c)
-?[x + 1]
-?[y - 5]
+list('a' 'b' 'c')
+list(list(1 2) list(3 4) 5)
+
+(define example_list (list 5 2 3 1 4));
+(define sorted_list ?[sort(example_list)]);
+
+?[x + y]
+?[y - z]
+?[x * z]
